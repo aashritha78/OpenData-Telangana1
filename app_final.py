@@ -156,6 +156,12 @@ def sectors():
         elif sub_sector_selection == "Cash Crop":
             fig = px.bar(df_agriculture, x='crop', y='area_total', title='Cash Crops Area by Crop')
             st.plotly_chart(fig)
+            
+            fig0 = px.bar(df_agriculture, x='crop', y='production_total', title='Cash Crops Production by Crop')
+            st.plotly_chart(fig0)
+            
+            fig1 = px.bar(df_agriculture, x='crop', y='yeild_total', title='Cash Crops Yield by Crop')
+            st.plotly_chart(fig1)
         
         elif sub_sector_selection == "Adilabad Crop":
             fig = px.bar(df_agriculture, x='mandal_name', y='actual_area', title='Adilabad Crop Area by Mandal')
