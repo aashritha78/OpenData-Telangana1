@@ -186,12 +186,7 @@ def sectors():
         elif sub_sector_selection == "Mission Kakateeya":
             fig = px.bar(df_infrastructure, x='Districts', y=['Minor Irrigation Tanks', 'Sanctions Mission Kakatiya Phase-I', 'Sanctions Mission Kakatiya Phase-II'],
                          title='Mission Kakateeya by District')
-            st.plotly_chart(fig)
-
-    
-    
-    
-    
+            st.plotly_chart(fig)    
             
 # Define the home page function
 def home():
