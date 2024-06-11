@@ -68,15 +68,6 @@ def infrastructure():
     st.write("""
         Details on water quality monitoring, pollution levels, and clean water initiatives.
     """)
-def team():
-    st.title("Our Team")
-    st.subheader("Meet the team behind the dashboard")
-    # Add your team member information here
-    team_members = [ "Likki Aashritha","Likith Gannarapu", "Aniruddha Srihari", "Sreeja M", "Harsha Vardhan Reddy"]
-    # Display each team member's name
-    for member in team_members:
-        st.text(member)
-
 def sectors():
     st.title("Sectors")
     sectors_list = ["Health", "Agriculture", "Infrastructure"]
@@ -156,12 +147,6 @@ def sectors():
         elif sub_sector_selection == "Cash Crop":
             fig = px.bar(df_agriculture, x='crop', y='area_total', title='Cash Crops Area by Crop')
             st.plotly_chart(fig)
-            
-            fig0 = px.bar(df_agriculture, x='crop', y='production_total', title='Cash Crops Production by Crop')
-            st.plotly_chart(fig0)
-            
-            fig1 = px.bar(df_agriculture, x='crop', y='yeild_total', title='Cash Crops Yield by Crop')
-            st.plotly_chart(fig1)
         
         elif sub_sector_selection == "Adilabad Crop":
             fig = px.bar(df_agriculture, x='mandal_name', y='actual_area', title='Adilabad Crop Area by Mandal')
@@ -202,6 +187,7 @@ def sectors():
             fig = px.bar(df_infrastructure, x='Districts', y=['Minor Irrigation Tanks', 'Sanctions Mission Kakatiya Phase-I', 'Sanctions Mission Kakatiya Phase-II'],
                          title='Mission Kakateeya by District')
             st.plotly_chart(fig)
+
     
     
     
