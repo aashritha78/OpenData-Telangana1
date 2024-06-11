@@ -17,11 +17,11 @@ telangana_df = telangana
 
 
 agriculture_files = {
-    "Ground Water Level": 'DataSets/Agriculture/Telangana_GrounWaterLevel_Overall.csv',
-    "Suryapet Crop": 'DataSets/Agriculture/Suryapet_mandal_wise_crop.csv',
-    "Cash Crops": 'DataSets/Agriculture/Cash_crops_2016-2017.csv',
-    "Adilabad Crop": 'DataSets/Agriculture/Adilabad_mandal_wise_crop.csv',
-    "Cereals and Millets": 'DataSets/Agriculture/Cereals_and_Millets_2016-2017.csv'
+    "Ground Water Level": 'DataSets/Agriculture/Telangana_GrounWaterLevel_Overall/Telangana_GrounWaterLevel_Overall.csv',
+    "Suryapet Crop": 'DataSets/Agriculture/Suryapet_mandal_wise_crop/Suryapet_mandal_wise_crop.csv',
+    "Cash Crops": 'DataSets/Agriculture/Cash_crops_2016-2017/Cash_crops_2016-2017.csv',
+    "Adilabad Crop": 'DataSets/Agriculture/Adilabad_mandal_wise_crop/Adilabad_mandal_wise_crop.csv',
+    "Cereals and Millets": 'DataSets/Agriculture/Cereals_and_Millets_2016-2017/Cereals_and_Millets_2016-2017.csv'
 }
 
 health_files = {
@@ -82,102 +82,115 @@ def team():
 def sectors():
     st.title("Sectors")
     sectors_list = ["Health", "Agriculture", "Infrastructure"]
-    sector_selection = st.selectbox("Choose a sector:", sectors_list)
+    selected_sector = st.selectbox("Choose a sector:", sectors_list)
     
-    if sector_selection == "Health":
-        sub_sectors = ["Urban Health Centers", "Primary Health Centers", "District Health Assets", "Area of Hospitals", "Community Health Centers", "Overview of Hospitals"]
-        sub_sector_selection = st.selectbox("Choose a sub-sector:", sub_sectors)
+if selected_sector == 'Agriculture':
+    agriculture_options = list(agriculture_files.keys())
+    selected_agriculture_sector = st.sidebar.selectbox('Select a sub-sector', agriculture_options)
 
-        df_health = pd.read_csv(health_files[sub_sector_selection])
-        st.dataframe(df_health)
-        # Visualization for Health data
-        if 'Urban Health Centers' in sub_sector_selection:
-            
-            fig = px.bar(df_health, x='VILLAGE NAME', y='SITE AREA ACRES', title='Urban Health Centers by Villages')
-            st.plotly_chart(fig)
+    st.header(f'Agriculture Data: {selected_agriculture_sector}')
+    df_agriculture = load_and_display_data(agriculture_files[selected_agriculture_sector])
 
-            df_grouped = df_health.groupby('Districts')['SITE AREA ACRES'].sum().reset_index()
-            fig0 = px.bar(df_grouped, x='Districts', y='SITE AREA ACRES', title='Urban Health Centers by District')
-            st.plotly_chart(fig0)
-
-        elif sub_sector_selection == 'Primary Health Centers':
-            df_health_grouped = df_health.groupby('VILLAGE NAME', as_index=False).sum()
-            fig = px.bar(df_health_grouped, x='VILLAGE NAME', y='SITE AREA ACRES', title='Urban Health Centers by Villages')
-            st.plotly_chart(fig)
-
-            df_district_grouped = df_health.groupby('Districts')['SITE AREA ACRES'].sum().reset_index()
-            fig0 = px.bar(df_district_grouped, x='Districts', y='SITE AREA ACRES', title='Urban Health Centers by District')
-            st.plotly_chart(fig0)
+    # Visualization for Agriculture data
+    if selected_agriculture_sector == 'Ground Water Level':
+        fig = px.bar(df_agriculture, x='mandal', y='value', title='Ground Water Level by Mandal')
+        st.plotly_chart(fig)
+    elif selected_agriculture_sector == 'Suryapet Crop':
+        fig = px.bar(df_agriculture, x='mandalname', y='actualareasown', title='Suryapet Crop Area by Mandal')
+        st.plotly_chart(fig)
+    elif selected_agriculture_sector == 'Cash Crops':
+        fig = px.bar(df_agriculture, x='crop', y='area_total', title='Cash Crops Area by Crop')
+        st.plotly_chart(fig)
+    elif selected_agriculture_sector == 'Adilabad Crop':
+        fig = px.bar(df_agriculture, x='mandal_name', y='actual_area', title='Adilabad Crop Area by Mandal')
+        st.plotly_chart(fig)
+    elif selected_agriculture_sector == 'Cereals and Millets':
+        fig = px.bar(df_agriculture, x='crop', y='area_total', title='Cereals and Millets Area by Crop')
+        st.plotly_chart(fig)
+    elif 'Weather' in selected_agriculture_sector:
+        df_weather_2021 = load_and_display_data(agriculture_files['Weather 2021'])
+        df_weather_2022 = load_and_display_data(agriculture_files['Weather 2022'])
+        df_weather_2023 = load_and_display_data(agriculture_files['Weather 2023'])
         
-        elif sub_sector_selection == 'District Health Assets':
-            df_health_grouped = df_health.groupby('Districts_Hospital', as_index=False).sum()
-            fig = px.bar(df_health_grouped, x='Districts_Hospital', y='AREA Sq.mts', title='District Health Assets by Hospital')
-            st.plotly_chart(fig)
-    
-        elif sub_sector_selection == 'Community Health Centers':
-            fig = px.bar(df_health, x='VILLAGE NAME', y='SITE AREA ACRES', title='Urban Health Centers by Villages')
-            st.plotly_chart(fig)
-
-            df_grouped = df_health.groupby('Districts')['SITE AREA ACRES'].sum().reset_index()
-            fig0 = px.bar(df_grouped, x='Districts', y='SITE AREA ACRES', title='Community Health Centers by District')
-            st.plotly_chart(fig0)
-
-        elif sub_sector_selection == 'Overview of Hospitals':
-            data = df_health
-            fig = px.bar(data, x='hospitals', y='health_subcentres', title='Number of health_subcentres by District')
-            st.plotly_chart(fig)
-
-            top_districts_doctors = (data.groupby('hospitals')['doctors_in_all_hospitals']
-                                     .sum().nlargest(5).reset_index())
-            st.subheader("Top 5 Districts with Most Doctors")
-            fig = px.line(top_districts_doctors, x='hospitals', y='doctors_in_all_hospitals', title='Top 5 Districts with Most Doctors')
-            st.plotly_chart(fig)
-            st.write("This line chart highlights the top 5 districts with the highest number of doctors.")
-    
-        elif sub_sector_selection == 'Area of Hospitals':
-            fig = px.bar(df_health, x='VILLAGE NAME', y='SITE AREA ACRES', title='Urban Health Centers by Villages')
-            st.plotly_chart(fig)
-
-            df_grouped = df_health.groupby('District')['SITE AREA ACRES'].sum().reset_index()
-            fig0 = px.bar(df_grouped, x='District', y='SITE AREA ACRES', title='Community Health Centers by District')
-            st.plotly_chart(fig0)
+        df_weather_2021['Year'] = '2021'
+        df_weather_2022['Year'] = '2022'
+        df_weather_2023['Year'] = '2023'
         
-    elif sector_selection == "Agriculture":
-        sub_sectors = ["Ground Water Level", "Suryapet Crop", "Cash Crop", "Adilabad Crop", "Cereals and Millets"]
-        sub_sector_selection = st.selectbox("Choose a sub-sector:", sub_sectors)
-        df_agriculture = pd.read_csv(agriculture_files[sub_sector_selection])
-        st.dataframe(df_agriculture)
+        df_weather = pd.concat([df_weather_2021, df_weather_2022, df_weather_2023])
+        
+        fig = px.line(df_weather, x='date', y='value', color='Year', title='Temperature Trends (2021, 2022, 2023)')
+        st.plotly_chart(fig)
 
-        if sub_sector_selection == "Ground Water Level":
-            fig = px.bar(df_agriculture, x='mandal', y='value', title='Ground Water Level by Mandal')
-            st.plotly_chart(fig)
+elif selected_sector == 'Health':
+    health_options = list(health_files.keys())
+    selected_health_sector = st.sidebar.selectbox('Select a sub-sector', health_options)
 
-            df_grouped = df_agriculture.groupby('district')['value'].sum().reset_index()
-            fig0 = px.bar(df_grouped, x='district', y='value', title='Ground Water Level by District')
-            st.plotly_chart(fig0)
+    st.header(f'Health Data: {selected_health_sector}')
+    df_health = pd.read_csv(health_files[selected_health_sector])
 
-        if sub_sector_selection == "Suryapet Crop":
+    # Visualization for Health data
+    if 'Urban Health Centers' in selected_health_sector:
+        fig = px.bar(df_health, x='Districts', y='SITE AREA ACRES', title='Urban Health Centers by District')
+        st.plotly_chart(fig)
+    
+    elif selected_health_sector == 'Primary Health Centers':
+        fig = px.bar(df_health, x='Districts', y='SITE AREA ACRES', title='Primary Health Centers by District')
+        st.plotly_chart(fig)
+    
+    elif selected_health_sector == 'District Health Assets':
+        fig = px.bar(df_health, x='Districts_Hospital', y='SITE AREA ACRES', title='District Health Assets by Hospital')
+        st.plotly_chart(fig)
 
-                
-            def load_and_aggregate_data(df):
-                aggregated_df = df.groupby(['year', 'crop'])['actualareasown'].sum().reset_index()
-                return aggregated_df
+    elif selected_health_sector == 'Community Health Centers':
+        fig = px.bar(df_health, x='Districts', y='SITE AREA ACRES', title='Community Health Centers by District')
+        st.plotly_chart(fig)
 
-            aggregated_df = load_and_aggregate_data(df_agriculture)
+    elif selected_health_sector == 'Overview of Hospitals':
+        fig = px.bar(df_health, x='record_number', y='area_hospitals', title='Overview of Hospitals')
+        st.plotly_chart(fig)
 
-            # Create a line chart showing the trend of actual areas owned over the years for each crop
-            fig = px.line(aggregated_df, x="year", y="actualareasown",
-            color="crop", title='Trend of Actual Areas Owned Over the Years by Crop',
-            labels={'actualareasown': 'Actual Areas Owned'})
+    elif selected_health_sector == 'Area of Hospitals':
+        fig = px.bar(df_health, x='VILLAGE NAME', y='SITE AREA ACRES', title='Area of Hospitals by Village')
+        st.plotly_chart(fig)
 
-            # Display the plot in Streamlit
-            st.plotly_chart(fig)
 
-            # fig = px.bar(df_agriculture, x='mandalname', y='actualareasown', title='Actual area sown Crop Area by Mandal')
-            # st.plotly_chart(fig)
 
-            # fig0 = px.bar(df_agriculture, x='mandalname', y='normalareasown', title='Normal area sown Crop Area by Mandal')
-            # st.plotly_chart(fig0)
+elif selected_sector == 'Infrastructure':
+    infrastructure_options = list(infrastructure_files.keys())
+    selected_infrastructure_sector = st.sidebar.selectbox('Select a sub-sector', infrastructure_options)
+
+    st.header(f'Infrastructure Data: {selected_infrastructure_sector}')
+    df_infrastructure = pd.read_csv(infrastructure_files[selected_infrastructure_sector])
+
+    # Visualization for Infrastructure data
+    if selected_infrastructure_sector == '2BHK Housing Scheme':
+        fig = px.bar(df_infrastructure, x='Districts', y=['Houses Allotted', 'Houses Allotted Rural', 'Houses Allotted Urban', 'Houses Sanctioned'],
+                     title='2BHK Housing Scheme by District')
+        st.plotly_chart(fig)
+
+    elif selected_infrastructure_sector == 'Classification of Roads':
+        fig = px.bar(df_infrastructure, x='District', y=['Four Lane Roads', 'Double Lane Roads', 'Intermediate Lane Roads', 'Single Lane Roads'],
+                     title='Classification of Roads by District')
+        st.plotly_chart(fig)
+
+    elif selected_infrastructure_sector == 'Electricity Connections':
+        fig = px.bar(df_infrastructure, x='Districts', y=['Domestic Connections', 'Industrial Connections', 'Agriculture Connections', 'Commercial Connections', 'Other Connections'],
+                     title='Electricity Connections by District')
+        st.plotly_chart(fig)
+
+    elif selected_infrastructure_sector == 'Gram Panchayat Roads':
+        fig = px.bar(df_infrastructure, x='Districts', y=['GPs having BT roads', 'GPs to be covered with BT roads', 
+                                                     'Total Habitations (other than GPs)', 'Habitations having all weather roads', 
+                                                     'Habitations not having all weather roads'],
+                 title='Gram Panchayat Roads by District')
+        st.plotly_chart(fig)
+
+
+    elif selected_infrastructure_sector == 'Mission Kakateeya':
+        fig = px.bar(df_infrastructure, x='Districts', y=['Minor Irrigation Tanks', 'Sanctions Mission Kakatiya Phase-I', 'Sanctions Mission Kakatiya Phase-II'],
+                     title='Mission Kakateeya by District')
+        st.plotly_chart(fig)
+
     
     
             
