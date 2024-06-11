@@ -68,6 +68,14 @@ def infrastructure():
     st.write("""
         Details on water quality monitoring, pollution levels, and clean water initiatives.
     """)
+def team():
+    st.title("Our Team")
+    st.subheader("Meet the team behind the dashboard")
+    # Add your team member information here
+    team_members = [ "Likki Aashritha","Likith Gannarapu", "Aniruddha Srihari", "Sreeja M", "Harsha Vardhan Reddy"]
+    # Display each team member's name
+    for member in team_members:
+        st.text(member)
 
 def sectors():
     st.title("Sectors")
